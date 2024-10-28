@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escaneamento de IP Local</title>
+</head>
+<body>
+    <h1>Escaneamento de IP Local</h1>
+    <p>Esta página tentará localizar um dispositivo na rede e redirecionar para ele.</p>
+
+    <script>
+        const subnet = '192.168.0.';
+        const start = 2;
+        const end = 12;
+
+        async function checkIP(ip) {
+            try {
+                const response = await fetch(`http://${ip}/call`, { method: 'GET' });
+                const text = await response.text();
+                if (text.trim() === 'OK') {
+                    window.location.href = `http://${ip}`;
+                    return true;  // Encontrou, interrompe o loop
+                }
+            } catch (error) {
+                // Ignora erro, apenas passa para o próximo IP
+            }
+            return false;  // Não encontrou
+        }
+
+        async function scanIPs() {
+            for (let i = start; i <= end; i++) {
+                const ip = `${subnet}${i}`;
+                const found = await checkIP(ip);
+                if (found) break;  // Interrompe o loop se encontrar o dispositivo
+            }
+        }
+
+        scanIPs();
+    </script>
+</body>
+</html>
